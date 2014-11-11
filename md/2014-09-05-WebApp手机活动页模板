@@ -1,0 +1,128 @@
+这里的实现方式跟PC端活动页的方式类似，不同的是WebApp需要适配各种不同的手机机型，这里也提供一套解决方案，可以实现手机页面快速适配。 
+模板特点： 
+
+1、背景图100%横切（设计稿640px）；
+
+2、页面按照320px重构（距离、尺寸是设计稿的一半）； 
+
+3、支持横竖屏切换； 
+
+4、快速适配方案（js使用zepto）
+
+
+<pre><code>
+(function () { 
+    var doScale = function () { 
+        var winW = $(window).width(), 
+            conH = parseInt($(".s-wrap").css('height')); 
+        if (winW > 320) { 
+            var s = (winW/320).toString(); 
+            var scale = s.substring(0, s.indexOf(".")+4); 
+            console.log(scale); 
+            var cssScale = '-webkit-transform: scale('+ scale +');-webkit-transform-origin: top;'; 
+            $('.s-maincont,.s-bg').attr('style', cssScale); 
+            //console.log($(".s-wrap").css('height')); 
+            $(".s-wrap").css('height',conH*scale+'px'); 
+        } 
+    }; 
+    doScale(); 
+    window.onorientationchange = function() { 
+        $(".s-wrap").css('height','553px');//reset 
+        doScale(); 
+    } 
+})(); 
+</code></pre>
+
+
+手机浏览： 
+
+http://test.lz.qq.com/act/demos/a20140509smfh/index.shtml
+
+
+
+
+
+
+<pre><code>
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<!--#include virtual="/include/meta.shtml" -->
+<title>双份欢乐豆来袭 - 蓝钻贵族官网</title>
+<link rel="stylesheet" href="http://qqgameappcdn.qq.com/min/f=/gamevip/mobile/css/comm/reset.css,/gamevip/mobile/css/comm/header_tpl.css,/gamevip/mobile/css/comm/footer_act.css,/gamevip/mobile/css/comm/icofont.css,/gamevip/mobile/css/module/popup.css,/gamevip/mobile/css/module/mod_btn.css">
+<style type="text/css">
+         body{background:#c5e4f7;overflow-x:hidden;}
+        .hid{width:0;height:0;overflow:hidden;text-indent:-9999px;font-size:0;}
+        .s-wrap{width:100%;margin:0 auto;overflow:hidden;}
+        .s-wrap .s-maincont{width: 320px;position:absolute;left:50%;z-index:2;margin-left:-160px;}
+        .s-wrap .s-bg{position: relative;left: 50%;top: 0;width: 320px;margin-left: -160px;}
+        .s-wrap .m-text{position:absolute;line-height:999px;font-size:0;overflow:hidden;background:url(about:blank);}
+        .s-wrap .btn-ktlz{top:137px;left:38px;width:134px;height:21px;}
+        .s-wrap .item-box{position:absolute;top:208px;left:33px;width:272px;height:84px;}
+        .s-wrap .item-box .img{float:left;width: 115px;overflow: hidden;}
+        .s-wrap .item-box .text{float: left;width:156px;overflow:hidden;}
+        .s-wrap .item-box .img img{border:1px solid #457e16;}
+        .s-wrap .item-box .text span{font-size:12px;color:#a2bf29;line-height:18px;padding-top:5px;display:block;}
+        .s-wrap .item-box .text b{font-size:13px;color:#fff;}
+        .s-wrap .item-box .text a{ margin-top:3px; height:32px; line-height:32px;}
+        .s-wrap .list-img{position:absolute;top:372px;left:33px;width: 288px;height: 92px;overflow: hidden;}
+        .s-wrap .list-img li {width: 111px;height: 69px;overflow: hidden;float: left;margin: 0 32px 0 0;}
+        .s-wrap .btn-djlq{top:464px;left:16px;width:289px;height:33px;}
+    </style>
+</head>
+<body>
+<h1 class="hid">双份欢乐豆来袭</h1>
+<!--#include virtual="/include/header_tpl_act.shtml" -->
+<div class="s-wrap" style="height:553px">
+    <div class="s-maincont">
+        <h2 class="hid haveh">登录触屏官网 领取专属欢乐豆</h2>
+        <a href="#" class="m-text btn-ktlz">开通/续费蓝钻</a>
+        <div class="item-box">
+            <p class="img"><img src="http://ossweb-img.qq.com/images/gamevip/lz/act/a20140418lzhllb/lbbimg.jpg" alt="" width="105"></p>
+            <p class="text">
+                <span><b>触屏版专享欢乐豆礼包</b></span>
+                <span id="hld_tips">蓝钻每月最高可领<strong>16000</strong>豆</span>
+                <a href="javascript:fetchHldGift();" class="btn btn_orange" id="hld_draw">立即领取</a>
+            </p>
+        </div>
+        <h3 class="hid">每月最高可领取16000豆，不要错过哇！</h3>  
+        <ul class="list-img">
+            <li><img src="http://ossweb-img.qq.com/images/gamevip/lz/act/a20140418lzhllb/lbmimg0.jpg" alt="" width="109"></li>
+            <li><img src="http://ossweb-img.qq.com/images/gamevip/lz/act/a20140418lzhllb/lbmimg1.jpg" alt="" width="109"></li>
+        </ul>
+        
+        <a href="#" class="m-text btn-djlq">更多触屏版专属礼包，点击领取</a>
+    </div>
+    <div class="s-bg">
+        <img src="images/bg01.jpg" width="320">
+        <img src="images/bg02.jpg" width="320">
+        <img src="images/bg03.jpg" width="320">
+    </div>
+</div>
+ <!--#include virtual="/include/footer_act.shtml" -->
+<script>
+    if(typeof(pgvMain) == 'function') pgvMain();
+    // 大于320屏幕设备缩放页面
+    (function () {
+        var doScale = function () {
+            var winW = $(window).width(),
+                conH = parseInt($(".s-wrap").css('height'));
+            if (winW > 320) {
+                var s = (winW/320).toString();
+                var scale = s.substring(0, s.indexOf(".")+4);
+                console.log(scale);
+                var cssScale = '-webkit-transform: scale('+ scale +');-webkit-transform-origin: top;';
+                $('.s-maincont,.s-bg').attr('style', cssScale);
+                $(".s-wrap").css('height',conH*scale+'px');
+            }
+        };
+        doScale();
+        window.onorientationchange = function() {
+            $(".s-wrap").css('height','553px');//reset
+            doScale();
+        }
+    })();
+</script>
+</body>
+</html>
+</code></pre>
