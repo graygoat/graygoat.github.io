@@ -1,0 +1,40 @@
+
+我们通常使用如下代码让用户下载文件
+
+<pre><code>
+header("Content-type: application/octet-stream");
+header('Content-Disposition: attachment; filename="' . basename($file) . '"');
+header("Content-Length: ". filesize($file));
+readfile($file);
+</code></pre>
+
+但这个代码有一个缺点就是PHP需要读取文件到输出缓冲，然后吐给Apache，再由Apache输出给客户端。
+
+如果我希望文件可以基于last-modified进行cache，那我就需要判断if-modified-since请求头，检查文件的mtime，最后才能返回304。
+
+X-SendFile可以让一切变得更简单！
+
+<pre><code>
+header("X-Sendfile: $file");
+header("Content-type: application/octet-stream");
+header('Content-Disposition: attachment; filename="' . basename($file) . '"');
+</code></pre>
+
+如果你是在nginx，则可以使用X-Accel-Redirect。首先定义一个internal的地址：
+<pre><code>
+location /files {
+    root /var/www;
+    internal;
+}
+</code></pre>
+
+然后在PHP中只需要直接输出这个头即可
+<pre><code>
+header("X-Accel-Redirect: /files/" . $path);
+</code></pre>
+
+
+http://www.jasny.net/articles/how-i-php-x-sendfile/
+
+http://wiki.nginx.org/XSendfile
+
