@@ -1,35 +1,35 @@
 移动开发中常用的滚动控件。比iscroll，文件更小。实现了惯性，吸附，反弹，滚动条等常用的滚动效果。封装为一个AMD模块。只用调用init方法即可 
 
 最简单的: 
-<code><pre>
+<pre><code>
 xscroller.init({ 
     $dom: document.getElementById('wrap'), scrollbar: true 
 }); 
-</pre></code>
+</code></pre>
 
 吸附
-<code><pre>
+<pre><code>
 xscroller.init({ 
     $dom: this.$('.x-piclist-wrap').get(0), 
     direction: 'x', 
     snap: 400 
 }); 
-</pre></code>
+</code></pre>
 
 取消越界的滚动和反弹
-<code><pre>
+<pre><code>
 xscroller.init({ 
     $dom: $wrap.get(0), 
     position: 'relative', 
     direction: 'y', 
     overscroll: false 
 });
-</pre></code>
+</code></pre>
 
 
 
 
-<code><pre>
+<pre><code>
 // -*- coding: utf-8-unix; -*-
 // Copyright (c) 2013 Tencent, Inc.
 //     All rights reserved.
@@ -521,4 +521,4 @@ define(function (require, exports, module) {
     };
 
 });
-</pre></code>
+</code></pre>
