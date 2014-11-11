@@ -1,0 +1,106 @@
+该代码应用在腾讯世界杯客户端H5游戏中，游戏采用的是Crafty.js框架。在游戏中有一个会主动攻击”球员“的”木桩“，同时还有一个根据用户进球方向主动守门的”守门员“，下面两端代码解释这两项功能是如何实现的。 
+
+
+游戏体验地址 ：http://2014.qq.com/olarun/olaRunMobile.htm
+（使用手机访问，或者Chrome内将UA换成iphone） 
+
+
+使用Chrome调整为手机模式或者直接用手机访问即可。 
+
+对于这个框架，可以直接RTX我，一起研究探讨。很好玩。：） 
+
+Crafty.js框架地址：http://craftyjs.com/
+
+
+
+
+
+
+
+<pre><code>
+// 会主动攻击球员的球桩，跟随球员轨迹移动
+Crafty.c("Pile_attack", {
+    type: "pile",
+    init: function() {
+        // 获取球员对象
+        var player = Crafty("Player");
+        // 根据球员对象位置确定X轴
+        this.requires("Enemy,Pile_pic").attr({
+            y: -this.h,
+            x: player.x,
+            dynamic: true
+        }).bind("EnterFrame",function() {
+          	// 按帧同步方向
+            player = Crafty(player[0]);
+            if (this.y < 0) {
+                this.y++;
+            }
+
+            if (this.x < player.x) {
+                this.x++;
+            }
+
+            if (this.x > player.x) {
+                this.x--;
+            }
+			
+          	// 简单的加速度
+            this.y += 4 * Crafty.config.acceleration;
+        });
+    }
+});
+
+
+
+// 守门员
+Crafty.c("Goalkeeper",{
+    type:"Goalkeeper",
+    turnleft: true,
+    runing: false,
+    init: function() {
+        this.requires("2D, DOM, SpriteAnimation, Collision, Goalkeeper_pic")
+        .attr({
+            x: Crafty.viewport.width/2-this.w/2,
+            y: - Crafty.viewport.height + 65,
+            z:4
+        })
+        .reel('Running', 600, [[0, 0], [1, 0]]) // setup animation
+        .bind("EnterFrame",function() {
+            if(this.y < 65){
+                this.y += 15;
+            }else{    // 守门员固定位置不变
+                this.y = 65;
+
+                // 守门员进入球门范围，动起来
+                if(!this.runing){
+                    this.runing = true;
+                    this.animate('Running', -1)
+                }
+                // 发现足球射出
+                if(Crafty("Ball").shooting){
+                    // 计算真身与足球之间的位查判断方向
+                    if(this.x > Crafty("Ball").x - this.w/3 && this.x > Crafty.viewport.width/2-Crafty("Goal").w/2  && this.x < Crafty.viewport.width/2+Crafty("Goal").w){
+                        if(this.x > Crafty("Ball").x - this.w/3){ // 位移，下同
+                            this.x -= Number((Math.random()*3).toFixed(2));
+                        }else{
+                            this.x = Crafty("Ball").x - this.w/3;
+                        }
+                    }
+
+                    if(this.x < Crafty("Ball").x - this.w/3 && this.x > Crafty.viewport.width/2-Crafty("Goal").w/2  && this.x < Crafty.viewport.width/2+Crafty("Goal").w){
+                        if(this.x < Crafty("Ball").x - this.w/3){
+                            this.x += Number((Math.random()*3).toFixed(2));
+                        }else{
+                            this.x = Crafty("Ball").x - this.w/3;
+                        }
+                    }
+                }
+            }
+        }).onHit("Ball",function(ent) {
+            //console.log('守门员');
+            // 击中守门员，触发足球的击中事件
+            Crafty("Ball").trigger("Hurt", this);
+        });
+    }
+});
+</code></pre>
